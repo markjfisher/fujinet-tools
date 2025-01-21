@@ -6,27 +6,25 @@
 #include <apple2_filetype.h>
 #include <stdio.h>
 #include <string.h>
+#include "readline.h"
 
-char _ft[16];
-char _aux[16];
+#include "local_file_init.h"
+
+static char ft[16];
+static char aux[16];
 
 void local_file_init(void)
 {
-    
-    printf("Enter Destination Filetype: $");
-    gets(_ft);
+    printf("Enter Destination Filetype:\n$");
+    readline(ft);
 
-    if (!_ft[0])
-        _filetype = PRODOS_T_BIN;
-    else
-        sscanf(_ft,"%x",&_filetype);
+    if (ft[0])
+        sscanf(ft,"%x", &_filetype);
 
 
-    printf("Enter Destination Auxtype: $");
-    gets(_aux);
+    printf("Enter Destination Auxtype:\n$");
+    readline(aux);
 
-    if (!_aux[0])
-        _auxtype = 0;
-    else
-        sscanf(_aux,"%x",&_auxtype);
+    if (aux[0])
+        sscanf(aux,"%x", &_auxtype);
 }

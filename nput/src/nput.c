@@ -10,23 +10,24 @@
 
 #define NET_EOF 136
 
-unsigned char buf[1024];
+static unsigned char buf[1024];
 
 /**
  * @brief Do network transfer to network endpoint
  * @param source The source filename
- * @param dest the destination URL
+ * @param dest The destination URL
  * @return error code
  */
 int nput(char *source, char *dest)
 {
-    unsigned char err=0xFF;
-    FILE *fp;
-    unsigned char c=0, nerr=0;
-    unsigned int bw=0;
-    unsigned long total=0;
+    unsigned char err = 0xFF;
+    FILE *fp = NULL;
+    unsigned char c = 0, nerr = 0;
+    unsigned int bw = 0;
+    unsigned long total = 0;
+    int retval = 1;
 
-    fp = fopen(source,"r");
+    fp = fopen(source, "r");
     if (!fp)
     {
         perror("Could not open source file. Aborting");
@@ -43,25 +44,25 @@ int nput(char *source, char *dest)
     err = network_open(dest, OPEN_MODE_WRITE, OPEN_TRANS_NONE);
     if (err != FN_ERR_OK)
     {
-        printf("Could not open %s, error #%u. Aborting.\n",dest,err);
+        printf("Could not open %s, error #%u. Aborting.\n", dest, err);
         goto nput_close;
     }
 
     while (!feof(fp))
     {
-        unsigned short wlen=0;
-        int rlen=0;
+        unsigned short wlen = 0;
+        int rlen = 0;
 
-        rlen = fread(buf,sizeof(unsigned char), sizeof(buf), fp);
+        rlen = fread(buf, sizeof(unsigned char), sizeof(buf), fp);
 
         if (rlen)
         {
             err = network_write(dest, buf, rlen);
             if (err != FN_ERR_OK)
             {
-                printf("Could not write to network, error #%u\n",err);
+                printf("Could not write to network, error #%u\n", err);
                 network_status(dest,&bw,&c,&nerr);
-                printf("Network Status Error #%u\n",err);
+                printf("Network Status Error #%u. Aborting.\n", err);
                 goto nput_close;
             }
         }
@@ -69,14 +70,13 @@ int nput(char *source, char *dest)
     }
 
     printf("Done.\n");
-    
+    retval = 0;
+
 nput_close:
     network_close(dest);
 
     if (fp)
         fclose(fp);
 
-    printf("PRESS ENTER TO CONTINUE.\n");
-    gets(buf);
+    return retval;
 }
-

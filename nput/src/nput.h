@@ -11,7 +11,7 @@
 /**
  * @brief Do network transfer to network
  * @param source The source filename
- * @param dest the destination URL
+ * @param dest The destination URL
  * @return error code
  */
 int nput(char *source, char *dest);
