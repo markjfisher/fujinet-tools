@@ -11,9 +11,9 @@
 /**
  * @brief Do network transfer to local filesystem
  * @param source The source N: URL
- * @param dest the destination local file
+ * @param dest The destination local file
  * @return error code
  */
-int nget(char *source, char *dest);
+int nget(const char *source, const char *dest);
 
 #endif 
