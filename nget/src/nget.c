@@ -9,24 +9,27 @@
 #include <stdio.h>
 #include "local_file_init.h"
 
+#include "nget.h"
+
 #define NET_EOF 136
 
-unsigned char buf[1024];
+static unsigned char buf[1024];
 
 /**
  * @brief Do network transfer to local filesystem
  * @param source The source N: URL
- * @param dest the destination local file
+ * @param dest The destination local file
  * @return error code
  */
-int nget(char *source, char *dest)
+int nget(const char *source, const char *dest)
 {
-    unsigned char err=0xFF;
-    FILE *fp;
-    unsigned char c=0, nerr=0;
-    unsigned int bw=0;
-    unsigned long total=0;
-    
+    unsigned char err = 0xFF;
+    FILE *fp = NULL;
+    unsigned char c = 0, nerr = 0;
+    unsigned int bw = 0;
+    unsigned long total = 0;
+    int retval = 1;
+
     err = network_init();
     if (err != FN_ERR_OK)
     {
@@ -38,7 +41,7 @@ int nget(char *source, char *dest)
     err = network_open(source, OPEN_MODE_READ, OPEN_TRANS_NONE);
     if (err != FN_ERR_OK)
     {
-        printf("Could not open %s, error #%u. Aborting.\n",source,err);
+        printf("Could not open %s, error #%u. Aborting.\n", source, err);
         goto nget_close;
     }
 
@@ -53,13 +56,13 @@ int nget(char *source, char *dest)
     err = network_status(source, &bw, &c, &nerr);
     if (err != FN_ERR_OK)
     {
-        printf("Could not get initial network status. Aborting with error %u.\n",err);
+        printf("Could not get initial network status. Aborting with error %u.\n", err);
         goto nget_close;
     }
 
     while (nerr != NET_EOF)
     {
-        unsigned short wlen=0;
+        unsigned short wlen = 0;
         
         if (bw)
         {
@@ -82,20 +85,19 @@ int nget(char *source, char *dest)
         
         if (err != FN_ERR_OK)
         {
-            printf("Could not fetch subsequent network status. Aborting with error %u\n",err);
+            printf("Could not fetch subsequent network status. Aborting with error %u.\n", err);
             goto nget_close;
         }        
     }
 
     printf("Done.\n");
-    
+    retval = 0;
+
 nget_close:
     network_close(source);
 
     if (fp)
         fclose(fp);
 
-    printf("PRESS ENTER TO CONTINUE.\n");
-    gets(buf);
+    return retval;
 }
-

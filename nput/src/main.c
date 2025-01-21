@@ -1,25 +1,33 @@
 #include <string.h>
 #include <stdio.h>
-#include "main.h"
+#include <conio.h>
+#include <cc65.h>
 #include "nput.h"
+#include "readline.h"
 
 #include "main.h"
 
-char *version = "1.0.0";
+const char *version = "1.0.0";
 
-char source[256];
-char dest[256];
+static char source[256];
+static char dest[256];
 
-void get_parms(void)
+static void quit(void)
+{
+    printf("Press any key to continue.\n");
+    cgetc();
+}
+
+static void get_parms(void)
 {
     printf("Enter Source Filename: \n");
-    gets(source);
+    readline(source);
 
     if (!source[0])
         return;
     
     printf("Enter Destination URL: \n");
-    gets(dest);
+    readline(dest);
 
     if (!dest[0])
         return;
@@ -27,12 +35,23 @@ void get_parms(void)
 
 int main(int argc, char* argv[])
 {
-    if (argc<2)
+#ifdef __APPLE2__
+    if (get_ostype() >= APPLE_IIIEM)
+        allow_lowercase(1);
+#endif
+
+    if (doesclrscrafterexit())
+    {
+        clrscr();
+        atexit(quit);
+    }
+
+    if (argc < 2)
         get_parms();
     else
     {
-        strcpy(source,argv[1]);
-        strcpy(dest,argv[2]);
+        strcpy(source, argv[1]);
+        strcpy(dest, argv[2]);
     }
     
     if (!source[0])
