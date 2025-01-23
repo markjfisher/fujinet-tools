@@ -5,11 +5,8 @@ ifeq ($(DEBUG),true)
     $(info >>>Starting custom-apple2.mk)
 endif
 
-
 #################################################################
-# COMPILE FLAGS for just apple2 can be added here
-#LDFLAGS += --start-addr 0x4400
-
+# COMPILE FLAGS
 
 #################################################################
 # DISK creation
