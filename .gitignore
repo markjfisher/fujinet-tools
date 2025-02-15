@@ -3,15 +3,27 @@
 
 # VS Code build directory
 **/.vscode
-
-obj/
-*.map
-*.com
+.vscode/
 
 # IntelliJ project dir
 .idea/
 
-# Don't ignore .COM files in the dist folder
-!dist/*.com
 
+# build artifacts
 build/
+dist/
+obj/
+_cache/
+
+*.map
+*.com
+
+# emulator configs
+altirra-debug.ini
+atari800-debug.cfg
+AppleWin.log
+
+.DS_Store
+
+*.jar
+*.dsk
