@@ -28,6 +28,7 @@
 .segment "LOADER"
 
 _load_app:
+        CLI                     ; Why, DOS 2? WHY?!
         JSR     clear_menu
         JSR     load_setup
         LDA     #$FF
