@@ -1,8 +1,9 @@
         .export clear_menu
         .export load_setup
         .export load_init
-        .export dosiov
-        .export load_close
+        .export dosiov_status
+        .export dosiov_read
+        .export dosiov_close
         .export bindcb
         .export clodcb
         .export stadcb
@@ -12,8 +13,8 @@
 .segment "LSTACK"
 
 clear_menu:    
-    	lda     #0
-    	ldx     #0
+    	lda     #$00
+        tax
     	ldy     #$b8
 cloop:	sta     $0700,x
     	inx
@@ -21,7 +22,7 @@ cloop:	sta     $0700,x
     	inc     cloop+2  ; increasing HI-byte of the clearing address
     	dey
     	bne     cloop
-	    RTS
+	rts
 
 load_setup:
         LDA     #$C0
@@ -37,9 +38,28 @@ load_init:
         STA     INITAD+1
         RTS
 
-dosiov:
-        STA     dodcbl+1
-        STY     dodcbl+2
+dosiov_close:
+        LDA     #<clodcb
+        sta     dodcbl+1
+        LDA     #>clodcb        ; never zero as we're on the stack
+        sta     dodcbl+2
+        bne     siov_copy_go
+
+dosiov_status:
+        LDA     #<stadcb
+        sta     dodcbl+1
+        LDA     #>stadcb        ; never zero as we're on the stack
+        sta     dodcbl+2
+        bne     siov_copy_go
+
+dosiov_read:
+        LDA     #<bindcb
+        sta     dodcbl+1
+        LDA     #>bindcb
+        sta     dodcbl+2
+        ; fall through
+
+siov_copy_go:
         LDY     #$0B
 dodcbl: LDA     $FFFF,Y
         STA     DCB,Y
@@ -47,15 +67,7 @@ dodcbl: LDA     $FFFF,Y
         BPL     dodcbl
 
 SIOVDST:
-        JSR     SIOV
-        LDY     DSTATS
-        TYA
-        RTS
-
-load_close:
-        LDA     #<clodcb
-        LDY     #>clodcb
-        JMP     dosiov
+        JMP     SIOV
 
 stadcb:
         .BYTE   $71         ; DDEVIC
