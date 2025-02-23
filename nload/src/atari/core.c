@@ -63,10 +63,11 @@ void load(void)
         OS.dvstat[2] =
         OS.dvstat[3] = 0x00;
     
-    network_open((char *)OS.lbuff,4,0);
+    network_open((char *)OS.lbuff, 4, 0);
 
     if (OS.dvstat[3]>1)
     {
+        network_close((char *)OS.lbuff);
         memset(OS.lbuff,0x00,sizeof(OS.lbuff));
         put_error(OS.dvstat[3]);
 
