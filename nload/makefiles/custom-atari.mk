@@ -8,7 +8,7 @@ endif
 # reserved memory for graphics
 # LDFLAGS += -Wl -D,__RESERVED_MEMORY__=0x2000
 
-LDFLAGS += --start-addr 0x4000 -C src/custom-atari.cfg
+LDFLAGS += --start-addr 0x4000 -C src/atari/custom-atari.cfg
 #LDFLAGS += -C cfg/atari.cfg
 
 ################################################################

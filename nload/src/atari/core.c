@@ -124,9 +124,3 @@ bool get_filename(int argc,char **argv)
     // We're good.
     return true;
 }
-
-void main(int argc,char **argv)
-{
-    if (get_filename(argc,argv))
-        load();
-}
