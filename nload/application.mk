@@ -3,6 +3,6 @@
 
 ifeq ($(CURRENT_TARGET),atari)
 # LDFLAGS += -Wl -D,__RESERVED_MEMORY__=0x0001
-LDFLAGS += --start-addr 0x4000 -C src/atari/custom-atari.cfg
+LDFLAGS += --start-addr 0x3000 -D,__RESERVED_MEMORY__=0x0001 -C src/atari/custom-atari.cfg
 APPEND_TARGET := 0
 endif

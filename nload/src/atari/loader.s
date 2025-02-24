@@ -37,7 +37,7 @@ _load_app:
         CPY     #$01
         BNE     R
 
-        JSR     clear_menu
+        ;JSR     clear_menu
         JSR     load_setup
 
         INC     BIN_1ST
@@ -52,7 +52,7 @@ GETFIL: JSR     LOAD_READ2      ; Get two bytes (binary header)
         JSR     LOAD_ENDAD      ; Put end address in
         JSR     LOAD_BUFLEN     ; Calculate buffer length
         JSR     LOAD_GETDAT     ; Get the data record
-        BPL     :+              ; Was EOF detected?
+        BMI     JSTART              ; Was EOF detected?
         JSR     JSTART          ; Yes. Go to RUNAD
 :       JSR     JINIT           ; Attempt initialization
         JMP     GETFIL          ; Process next payload
