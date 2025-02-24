@@ -3,8 +3,10 @@
         .import clear_menu
         .import load_setup
         .import load_init
-        .import dosiov
+        .import dosiov_status
+        .import dosiov_read
         .import bindcb
+        .import clodcb
         .import stadcb
 
         .include "atari.inc"
@@ -29,14 +31,14 @@
 
 _load_app:
         CLI                     ; Why, DOS 2? WHY?!
-        JSR     clear_menu
-        JSR     load_setup
-        LDA     #$FF
-        STA     BIN_1ST
+        JSR     SAVE_UNITID
         JSR     LOAD_READ2
         JSR     LOAD_CHKFF
         CPY     #$01
         BNE     R
+
+        JSR     clear_menu
+        JSR     load_setup
 
         INC     BIN_1ST
         ; Process each payload
@@ -58,6 +60,17 @@ GETFIL: JSR     LOAD_READ2      ; Get two bytes (binary header)
 JINIT:  JMP     (INITAD)        ; Will either RTS or perform INIT
 JSTART: JMP     (RUNAD)         ; Godspeed.
 R:      RTS                     ; Stunt-double for (INITAD),(RUNAD)
+
+;---------------------------------------
+SAVE_UNITID:
+;---------------------------------------
+    ; The application is expected to have opened the device before calling the loader, and setting dunit in this process.
+    ; We need to honour that id in the DCB blocks the loader uses.
+        LDA     IO_DCB::dunit
+        STA     bindcb + IO_DCB::dunit - DCB
+        STA     clodcb + IO_DCB::dunit - DCB
+        STA     stadcb + IO_DCB::dunit - DCB
+        RTS
 
 ;---------------------------------------
 LOAD_READ2:
@@ -326,7 +339,6 @@ GETDAT_DOSIOV:
         ORA     BLH
         BEQ     CHECK_EOF_DONE
 
-:
     ; SIO READ
         LDA     STL
         STA     bindcb + IO_DCB::dbuflo - DCB    ; Start Address Lo
@@ -342,9 +354,7 @@ GETDAT_DOSIOV:
     ;---------------------------------------
     ; Send Read request to SIO
     ;---------------------------------------
-        LDA     #<bindcb
-        LDY     #>bindcb
-        JSR     dosiov
+        JSR     dosiov_read
 
     ;---------------------------------------
     ; Advance start address by buffer length
@@ -360,11 +370,7 @@ GETDAT_DOSIOV:
 
 GETDAT_CHECK_EOF:
     ; Get status (updates DVSTAT, DSTATS)
-        LDA     bindcb + IO_DCB::dunit - DCB
-        STA     stadcb + IO_DCB::dunit - DCB
-        LDA     #<stadcb
-        LDY     #>stadcb
-        JSR     dosiov
+        JSR     dosiov_status
 
     ; Return -1 if DVSTAT == $0000 and DVSTAT+3 == EOF
         LDA     DVSTAT
@@ -384,21 +390,23 @@ CHECK_EOF_DONE:
         RTS
 
 
-BAL:            .res 1
-BAH:            .res 1
-STL:            .res 1
-STH:            .res 1
-ENL:            .res 1
-ENH:            .res 1
-HEADL:          .res 1
-HEADH:          .res 1
-BODYL:          .res 1
-BODYH:          .res 1
-BLL:            .res 1
-BLH:            .res 1
-TAILL:          .res 1
-TAILH:          .res 1
-STL2:           .res 1
-STH2:           .res 1
-BIN_1ST:        .res 1
+; these have to be part of the LOADER segment
+VARSPACE:
+BAL:            .res 1  ; 00
+BAH:            .res 1  ; 01
+STL:            .res 1  ; 02 ; Payload Start address
+STH:            .res 1  ; 03
+ENL:            .res 1  ; 04 ; Payload End address
+ENH:            .res 1  ; 05
+HEADL:          .res 1  ; 06 ; Bytes read from existing cache
+HEADH:          .res 1  ; 07
+BODYL:          .res 1  ; 08 ; Total bytes read in contiguous 512-byte blocks
+BODYH:          .res 1  ; 09
+BLL:            .res 1  ; 0A ; Payload Buffer Length
+BLH:            .res 1  ; 0B
+TAILL:          .res 1  ; 0C ; Bytes read from last cache
+TAILH:          .res 1  ; 0D
+STL2:           .res 1  ; 0E ; Payload Start address (working var)
+STH2:           .res 1  ; 0F
 
+BIN_1ST:        .byte $FF    ; Flag for binary loader signature (FF -> 1st pass)

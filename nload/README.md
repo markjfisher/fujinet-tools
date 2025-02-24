@@ -1,6 +1,6 @@
 # nload
 
-It's time to write your docs about YOUR AWESOME APP!
+Load and run binary files from a network host.
 
 ## building
 
