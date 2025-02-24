@@ -52,9 +52,9 @@ GETFIL: JSR     LOAD_READ2      ; Get two bytes (binary header)
         JSR     LOAD_ENDAD      ; Put end address in
         JSR     LOAD_BUFLEN     ; Calculate buffer length
         JSR     LOAD_GETDAT     ; Get the data record
-        BMI     JSTART              ; Was EOF detected?
-        JSR     JSTART          ; Yes. Go to RUNAD
-:       JSR     JINIT           ; Attempt initialization
+        BPL     @+              ; was EOF detected?
+        JSR	JSTART		; Yes, go to runad.
+@:	JSR	JINIT           ; Attempt Init.
         JMP     GETFIL          ; Process next payload
 
 JINIT:  JMP     (INITAD)        ; Will either RTS or perform INIT
