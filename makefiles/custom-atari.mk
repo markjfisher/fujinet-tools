@@ -27,13 +27,17 @@ ATARI_CACHE_DIR := $(CACHE_DIR)/atari
 	$(call MKDIR,$(DIST_DIR)/atr)
 	$(call MKDIR,$(CACHE_DIR))
 	$(call MKDIR,$(ATARI_CACHE_DIR))
-	cp $(DIST_DIR)/$(PROGRAM_TGT)$(SUFFIX) $(DIST_DIR)/atr/$(PROGRAM)$(SUFFIX)
+	@if [ "$(APPEND_TARGET)" -eq 1 ] ; then \
+		cp $(BUILD_DIR)/$(PROGRAM_TGT) $(DIST_DIR)/atr/$(PROGRAM)$(SUFFIX) ; \
+	else \
+		cp $(BUILD_DIR)/$(PROGRAM_TGT) $(DIST_DIR)/atr/$(PROGRAM)$(SUFFIX) ; \
+	fi
 	@if [ -f $(DIST_DIR)/$(PROGRAM).atr ] ; then \
 		rm $(DIST_DIR)/$(PROGRAM).atr ; \
 	fi
 	@if [ ! -f $(ATARI_CACHE_DIR)/picoboot.bin ] ; then \
-		echo "Downloading picoboot.bin"; \
-		curl -sL $(PICOBOOT_DOWNLOAD_URL) -o $(ATARI_CACHE_DIR)/picoboot.bin; \
+		echo "Downloading picoboot.bin" ; \
+		curl -sL $(PICOBOOT_DOWNLOAD_URL) -o $(ATARI_CACHE_DIR)/picoboot.bin ; \
 	fi
 	dir2atr -m -S -B $(ATARI_CACHE_DIR)/picoboot.bin $(DIST_DIR)/$(PROGRAM).atr $(DIST_DIR)/atr
 	rm -rf $(DIST_DIR)/atr

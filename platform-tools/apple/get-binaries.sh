@@ -7,9 +7,9 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 # project-root/
 #   _cache/
 #   platform-tools/
-#     apple-tools/
+#     apple/
 #
-# i.e. apple-tools is one level down from _cache
+# i.e. apple is one level down from _cache
 
 CACHE_DIR=$(realpath ${SCRIPT_DIR}/../../_cache)
 

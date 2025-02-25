@@ -12,7 +12,7 @@ ALL_TASKS =
 DISK_TASKS =
 
 # try and load some target mappings for all platforms
--include ../makefiles/os.mk
+-include ../../makefiles/os.mk
 
 CC := cl65
 
@@ -20,7 +20,7 @@ SRCDIR := src
 BUILD_DIR := build
 OBJDIR := obj
 DIST_DIR := dist
-CACHE_DIR := ../_cache
+CACHE_DIR := ../../_cache
 
 # This causes the output file to have the TARGET in the name, e.g. foo.atari.com
 # Set to 0 for "foo.com" instead, but note this will fail for devices that have multiple targets like apple2 and apple2enh that would share same name and overwrite each other.
@@ -86,14 +86,14 @@ ifeq ($(DEBUG),true)
     $(info >>load common.mk)
 endif
 
--include ../makefiles/common.mk
+-include ../../makefiles/common.mk
 
 
 ifeq ($(DEBUG),true)
     $(info >>load custom-$(CURRENT_PLATFORM).mk)
 endif
 
--include ../makefiles/custom-$(CURRENT_PLATFORM).mk
+-include ../../makefiles/custom-$(CURRENT_PLATFORM).mk
 
 
 ifeq ($(DEBUG),true)
