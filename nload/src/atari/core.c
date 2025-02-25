@@ -24,6 +24,8 @@ extern unsigned char _LOADER_SIZE__[];
 
 extern void load_app(void);
 
+bool nuke_memory=false;
+
 void find_vector(void *vector, unsigned char b1, unsigned char b2, unsigned char b3, unsigned char b4)
 {
     unsigned char *p = (unsigned char *)0xE000;
@@ -98,12 +100,27 @@ bool get_filename(int argc,char **argv)
 
     if (_is_cmdline_dos() && argv[1])
     {
+        unsigned char start_arg = 1;
+
+        if (!strcasecmp(argv[1],"/X"))
+        {
+            nuke_memory=true;
+            start_arg++;
+        }
+        
         // We are abusing that the pointer *argv points to is contiguous for 64 bytes.
- 	for (i=1;i<argc;i++)
+ 	for (i=start_arg;i<argc;i++)
 		strcat((char *)OS.lbuff,argv[i]);
     }
     else
-    {    
+    {
+        print("CLEAR MEMORY BEFORE LOAD? (Y/N)\x9B");
+        get_line((char *)OS.lbuff,sizeof(OS.lbuff));
+
+        if (!nuke_memory)
+            if (OS.lbuff[0] == 'Y' || OS.lbuff == 'y')
+                nuke_memory=1;
+        
         print("NETWORK LOAD FROM WHAT FILE?\x9B");
         get_line((char *)OS.lbuff,sizeof(OS.lbuff));         
     }

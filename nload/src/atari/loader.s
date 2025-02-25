@@ -1,5 +1,6 @@
         .export _load_app
 
+        .import _nuke_memory
         .import clear_menu
         .import load_setup
         .import load_init
@@ -37,7 +38,10 @@ _load_app:
         CPY     #$01
         BNE     R
 
-        ;JSR     clear_menu
+        LDA     _nuke_memory    ; Check _nuke_memory set in core.c
+        BEQ     noclear         ; If 0, skip over clear_menu
+        JSR     clear_menu      ; Otherwise nuke RAM from orbit.
+noclear:
         JSR     load_setup
 
         INC     BIN_1ST
