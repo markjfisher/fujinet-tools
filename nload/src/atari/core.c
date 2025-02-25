@@ -26,21 +26,11 @@ extern void load_app(void);
 
 bool nuke_memory=false;
 
-void find_vector(void *vector, unsigned char b1, unsigned char b2, unsigned char b3, unsigned char b4)
-{
-    unsigned char *p = (unsigned char *)0xE000;
-    
-    while (p < (unsigned char *)0xFFFF)
-    {
-        if (*p++ = b1 && *p++ == b2 && *p++ == b3 && *p++ == b4)
-        {
-            vector = (unsigned char *)p-4;
-        }
-    }
-}
-
 void fix_vseror(void)
 {
+    unsigned char *p = (unsigned char *)0xE000;
+    unsigned int i=0;
+
     if (_dos_type != 5) // Skip if not Atari DOS, not needed. 
 	    return;
 
@@ -49,10 +39,24 @@ void fix_vseror(void)
     // Thanks to JB for pointing this out.
 
     // Find VSERIN in ROM
-    find_vector(OS.vserin,0x98,0x48,0xAD,0x0F);
-    
+    while (p < (unsigned char *)0xFFFF)
+    {
+        if (*p++ = 0x98 && *p++ == 0x48 && *p++ == 0xAD && *p++ == 0x0F)
+        {
+            OS.vserin = (unsigned char *)p-4;
+        }
+    }
+
     // Find VSEROR in ROM
-    find_vector(OS.vseror,0x98,0x48,0xe6,0x32);
+    p=(unsigned char *)0xE000;
+    
+    while (p < (unsigned char *)0xFFFF)
+    {
+        if (*p++ == 0x98 && *p++ == 0x48 && *p++ == 0xe6 && *p++ == 0x32)
+        {
+            OS.vseror = (unsigned char *)p-4;
+        }
+    }
 }
 
 void load(void)
