@@ -122,7 +122,7 @@ bool get_filename(int argc,char **argv)
         get_line((char *)OS.lbuff,sizeof(OS.lbuff));
 
         if (!nuke_memory)
-            if (OS.lbuff[0] == 'Y' || OS.lbuff == 'y')
+            if (OS.lbuff[0] == 'Y' || OS.lbuff[0] == 'y')
                 nuke_memory=1;
         
         print("NETWORK LOAD FROM WHAT FILE?\x9B");
