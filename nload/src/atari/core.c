@@ -29,6 +29,9 @@ void fix_vseror(void)
     unsigned char *p = (unsigned char *)0xE000;
     unsigned int i=0;
 
+    if (_dos_type != 5) // Skip if not Atari DOS, not needed. 
+	    return;
+
     // This whole routine exists because DOS 2 (AND ONLY DOS 2!) for some reason re-vectors VSEROR when DUP starts.
     // God only knows why. It only affects us because we purge memory when our loader starts up.
     // Thanks to JB for pointing this out.
