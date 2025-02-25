@@ -1,8 +1,17 @@
 #!/bin/bash
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-# ASSUMPTION: the script dir and cache dir are siblings directories (i.e. at same releative level compated to the project root)
-CACHE_DIR=$(realpath ${SCRIPT_DIR}/../_cache)
+
+# ASSUMPTION:
+# Directory structure is:
+# project-root/
+#   _cache/
+#   platform-tools/
+#     apple-tools/
+#
+# i.e. apple-tools is one level down from _cache
+
+CACHE_DIR=$(realpath ${SCRIPT_DIR}/../../_cache)
 
 # apple cache dir
 APPLE_CACHE_DIR=${CACHE_DIR}/apple
